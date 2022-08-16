@@ -19,7 +19,7 @@ class Todo(db.Model):
     def __repr__(self):
         return f'To do {self.id} {self.description}'
 
-db.create_all()
+#db.create_all() - not needed if we will be using migrations. 
 
 @app.route('/')
 def index():
