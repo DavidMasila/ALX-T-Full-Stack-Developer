@@ -1,9 +1,9 @@
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 app=Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI']='postgresql://postgres:postgres@localhost:5432/todoapp'
+app.config['SQLALCHEMY_DATABASE_URI']='postgresql://postgres:postgres@localhost:5432/doingstuff'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 
 db=SQLAlchemy(app)
@@ -18,13 +18,16 @@ class Todo(db.Model):
 
 db.create_all()
 
-@app.route('/stuff/create', methods=['POST']) #listener
+@app.route('/stuff/create', methods=['POST'])
 def create_todo():
-    description = request.form.get('description','')#given an empty default
+    description = request.get_json()['description'] #get_json fetches the json body that was sent to it.
+    #in the index.html we gave json key 'description'
     todo=Todo(description=description)
     db.session.add(todo)
     db.session.commit()
-    return redirect(url_for('index')) #enables appending of the new page information on the browser
+    return jsonify({ #returns json block that we give to it
+        'description':todo.description
+    })
 
 @app.route('/')
 def index(): #our controller
