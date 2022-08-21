@@ -17,7 +17,7 @@ class Todo(db.Model):
         return f'<Todo {self.id} {self.description}>'
 
 db.create_all()
-
+#model
 @app.route('/stuff/create', methods=['POST'])
 def create_todo():
     description = request.get_json()['description'] #get_json fetches the json body that was sent to it.
