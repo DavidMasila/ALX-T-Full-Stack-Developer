@@ -1,0 +1,11 @@
+.kind{
+    margin: 10% auto;
+    width: 900px;
+}
+.kids{
+    text-align: center;
+    border-bottom: 1px solid cyan;
+    width: 30%;
+    margin: 1%;
+    display: inline-block;
+}
