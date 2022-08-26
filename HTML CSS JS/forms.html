@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forms</title>
+</head>
+
+<body>
+    <h3>FORMS</h3>
+    <hr />
+    <br />
+    <!-- text input -->
+    <h4> Text Input </h4>
+    <form method="POST" action="/do/somthing" id="textForm">
+        <label class="Ulabels" id="label1">Username: <input type="text" id="message" name="messageText"
+                maxlength="25"></label>
+    </form>
+    <!-- password input -->
+    <hr />
+    <br />
+    <h4> Password input </h4>
+    <form method="POST" action="/do/something">
+        <label for="username">Username: <input type="password" id="password" name="password" maxlength="25" /></label>
+    </form>
+    <hr />
+    <br />
+    <!-- text area  -->
+    <h4>Text Area</h4>
+    <form method="POST" action="/do/something">
+        <textarea name="comments" cols="20" rows="5" placeholder="leave your comments here"></textarea>
+    </form>
+    <hr />
+    <br />
+    <!-- radiobuttons -->
+    <h4>Radio buttons</h4>
+    <form class="forms" action="/do/somthing" method="POST">
+        <p>Select Your favorite genre: </p>
+        <input type="radio" name="genre" value="pop" />Pop
+        <input type="radio" name="genre" value="rock" />Rock
+        <!-- this will be defaultlt checked -->
+        <input type="radio" name="genre" value="hiphop" checked="checked" />HipHop
+    </form>
+    <hr />
+    <br />
+    <!-- checkboxes -->
+    <h4>checkboxes</h4>
+    <form method="post" action="/do/something">
+        <p>Select your favorite streaming provider: </p>
+        <br />
+        <input type="checkbox" name="musicStream" value="spotify" checked="checked" />spotify
+        <input type="checkbox" name="musicstream" value="itunes" />itunes
+        <input type="checkbox" name="musicStream" value="boomplay" />Boomplay
+    </form>
+    <hr />
+    <br />
+    <!-- dropdown list -->
+    <h4>Drop down list</h4>
+    <form method="POST" action="/do/something">
+        <!-- select elements is used here -->
+        <p>Which device do you listen music on: </p>
+        <select name="devices">
+            <option value="ipod">ipod</option>
+            <!-- radio pre-selected -->
+            <option value="Radio" selected="selected">Radio</option>
+            <option value="Android">Android device</option>
+            <option value="PC">Laptop</option>
+        </select>
+        <p>Multiple selection. Hold down control to select more than one option: </p>
+        <select size="4" multiple="multiple" name="devices">
+            <option value="ipod">ipod</option>
+            <!-- radio pre-selected -->
+            <option value="Radio" selected="selected">Radio</option>
+            <option value="Android">Android device</option>
+            <option value="PC">Laptop</option>
+            <option value="MacBook">MacBook</option>
+        </select>
+    </form>
+    <hr />
+    <br />
+    <!-- file input box  -->
+    <form method="POST" action="/do/something">
+        <p>Upload a sample of your music: </p>
+        <input type="file" name="userSong" /><br /><br />
+        <input type="submit" value="Upload">
+    </form>
+    <hr />
+    <br />
+    <!-- submit button  -->
+    <h4>Submit Button</h4>
+    <form method="POST" action="/do/something">
+        <p>Subcribe using your email</p>
+        <label for="email">Email:
+            <input type="email" name="email">
+        </label>
+        <input type="email" name="subscribe" value="Subcribe">
+    </form>
+    <p>Image button</p>
+    <form method="POST" action="/do/something">
+        <p>Subcribe using your email</p>
+        <label for="email">Email:
+            <input type="text" name="email">
+        </label>
+        <input type="image" src="D:\picwork\gg.png" name="subscribe" value="Subcribe" width="100" height="20">
+    </form>
+    <hr />
+    <br />
+    <!-- grouping form elements   -->
+    <h4>Grouping form elements</h4>
+    <form method="POST" action="/do/something">
+        <fieldset>
+            <legend>Personal Details</legend>
+            <label for="email">Email: <br />
+                <input required="required" type="email" name="email">
+            </label>
+            <br />
+            <label for="firstName">First Name: <br />
+                <input required="required" type="text" name="fname" />
+            </label>
+            <br />
+            <label for="DOB">Date of Birth: <br />
+                <input required="required" type="date" name="DOB" />
+            </label>
+            <input type="submit" value="submit">
+            <p>Search</p>
+            <input type="search"  placeholder="search" name="search" />
+            <input type="submit" value="Search" />
+        </fieldset>
+    </form>
+</body>
+
+</html>
