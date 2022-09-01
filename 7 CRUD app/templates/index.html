@@ -29,22 +29,46 @@
         cursor: pointer;
         font-size: 20px;
     }
+    .list-wrapper, .todos-wrapper{
+        display: inline-block;
+        vertical-align: top;
+    }
 </style>
 
 <body>
-    <form id="form">
-        <input id="description" type="text" name="description" />
-        <input type="submit" value="Create" />
-    </form>
-    <ul id="todos">
-        {% for d in data %}
-        <li>
-            <input class="check-completed" data-id="{{ d.id }}" type="checkbox" {% if d.completed %} checked {% endif %} /> {{ d.description }}
-            <button class="delete-button" data-id="{{ d.id }}">&cross;</button>
-        </li>
-        {% endfor %}
-    </ul>
-    <div id="error" class="hidden">Something went wrong</div>
+
+    <div class="list-wrapper">
+        <ul id="lists">
+            {% for list in lists %}
+            <li>
+                <a href='/lists/{{ list.id }}'>
+                    {{ list.name }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="todos-wrapper">
+        <h4> {{ active_list.name }}</h4>
+        <form id="form">
+            <input id="description" type="text" name="description" />
+            <input type="submit" value="Create" />
+        </form>
+    
+        <ul id="todos">
+            {% for d in todos %}
+            <li>
+                <input class="check-completed" data-id="{{ d.id }}" type="checkbox" {% if d.completed %} checked {% endif %} /> {{ d.description }}
+                <button class="delete-button" data-id="{{ d.id }}">&cross;</button>
+            </li>
+            {% endfor %}
+        </ul>
+    
+        <div id="error" class="hidden">Something went wrong</div>
+    </div>
+
+
     <script>
         // delete part of CRUD 
         const deleteitems = document.querySelectorAll(".delete-button");
@@ -54,7 +78,11 @@
                 const todoId = e.target.dataset['id'];
                 fetch('/stuff/'+todoId+'/deleted', {
                     method: 'DELETE'
-                });
+                })
+                .then(function(){
+                    const item =e.target.parentElement;
+                    item.remove();
+                })
             } 
         }
 
