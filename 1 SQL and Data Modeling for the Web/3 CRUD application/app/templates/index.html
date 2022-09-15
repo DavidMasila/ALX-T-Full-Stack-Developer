@@ -1,0 +1,251 @@
+<!-- view -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        .hidden {
+            display: none;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+            width: 200px;
+        }
+
+        li {
+            clear: both;
+        }
+
+        li button {
+            -webkit-appearance: none;
+            border: none;
+            outline: none;
+            color: red;
+            float: right;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .lists-wrapper,
+        .todos-wrapper {
+            display: inline-block;
+            vertical-align: top;
+        }
+    </style>
+
+    <title>Todo app</title>
+</head>
+
+<body>
+    <h3>A simpled version of todo app</h3>
+    <div class="lists-wrapepr"></div>
+    <form action="/lists/create" method='POST' id="list-form">
+        <label for="todolist">Create list</label>
+        <input type="text" name="todolist" id="todolist-input" placeholder="A new list"
+            data-id="{{ active_list.id }}" />
+        <button type="submit">Create list</button>
+    </form>
+
+    <ul id="lists">
+        {% for list in lists %}
+        <li>
+            <input type="checkbox" data-id="{{ list.id }}" class="list-check-completed">
+            <a href="/lists/{{ list.id }}"> {{ list.name }} </a>
+            <button class="delete-list" data-id="{{ list.id }}">&cross;</button>
+        </li>
+        {% endfor %}
+    </ul>
+    </div>
+
+    <div class="todos-wrapper">
+        <h4>Todo Items</h4>
+        <form action="/todos/create" method="POST" id="todo-form">
+            <input id="list_id" type="hidden" value="{{ active_list.id }}">
+            <label for="description">Create Task: </label>
+            <input id='description' type="text" name="description" placeholder="Task description">
+            <button type="submit">Create Task</button>
+        </form>
+
+        <div id="error" class="hidden">
+            <p>An error occured please try again </p>
+        </div>
+
+        <h4>{{ active_list.name }}</h4>
+
+        <ul id="todos">
+            {% for todo in todos %}
+            <li>
+                <input id="complete" class="todo-check-completed" data-id="{{ todo.id }}" name="complete"
+                    type="checkbox" {% if todo.completed %} checked {% endif %} />
+                {{ todo.description }}
+                <button data-id="{{ todo.id }}" class="delete-todo">&cross;</button>
+            </li>
+            {% endfor %}
+            <!-- The data-id attribute helps us identify which description ID  we are dealing with-->
+        </ul>
+
+    </div>
+
+
+    <script>
+
+        const listCheckboxed = document.querySelectorAll(".list-check-completed");
+        for (let i = 0; i < listCheckboxed.length; i++) {
+            const checkbox = listCheckboxed[i];
+
+            checkbox.onchange = function (e) {
+                if (e.target.checked) {
+                    const listId = e.target.dataset.id;
+                    fetch('/lists/'+listId+'/set-completed', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                        .then(function (jsonResponse) {
+                            document.getElementById('error').className = 'hidden';
+
+                            const todoCheckboxes = document.querySelectorAll('.todo-check-completed');
+
+                            for (let i = 0; i < todoCheckboxes.length; i++) {
+                                const checkbox = todoCheckboxes[i];
+
+                                checkbox.checked = true;
+                            }
+                        })
+                        .catch(function () {
+                            document.getElementById('error').className = '';
+                        })
+                }
+            }
+        }
+
+        const todoCheckboxes = document.querySelectorAll(".todo-check-completed"); //get the checkboxes from class 
+        for (let i = 0; i < todoCheckboxes.length; i++) { //loop through all the checkboxes available 
+            const checkbox = todoCheckboxes[i] // get each individual checkbox
+            checkbox.onchange = function (e) { //listen to changes in the checkboxes
+                const newCompleted = e.target.checked; //if event target is checked register that
+                const todoId = e.target.dataset['id']; // identifying the dataset id from the event browser window.
+                fetch('/todos/' + todoId + '/set-completed', { //create a fetch method to send to controller route
+                    method: 'POST',
+                    body: JSON.stringify({
+                        'completed': newCompleted
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(function () {
+                        document.getElementById('error').className = "hidden";
+                    })
+                    .catch(function () {
+                        document.getElementById('error').className = "";
+                    })
+            }
+        }
+
+
+        const deleteTodobuttons = document.querySelectorAll('.delete-todo');
+        for (let i = 0; i < deleteTodobuttons.length; i++) {
+            const deleteButton = deleteTodobuttons[i];
+            deleteButton.onclick = function (e) {
+                const todoId = e.target.dataset['id'];
+                fetch('/todos/' + todoId + '/delete', {
+                    method: 'DELETE'
+                })
+                .then(function(){
+                    const item = e.target.parentElement;
+                    item.remove();
+                    document.getElementById('error').className='hidden';
+                })
+                .catch(function(){
+                    document.getElementById('error').className='';
+                })
+            }
+        }
+
+
+        const deleteListBtns = document.querySelectorAll('.delete-list');
+        for(let i=0; i<deleteListBtns.length; i++){
+            const listButton = deleteListBtns[i];
+            listButton.onclick=function(e){
+                const listId = e.target.dataset.id;
+                fetch('/lists/'+listId+'/delete',{
+                    method: 'DELETE'
+                })
+                .then(function(){
+                    const item = e.target.parentElement;
+                    item.remove();
+                    document.getElementById('error').className = 'hidden';
+                    window.location.reload(true);
+                })
+                .catch(function(){
+                    document.getElementById('error').className="";
+                })
+            }
+        }
+
+        document.getElementById('todo-form').onsubmit=function(e){
+            e.preventDefault();
+
+            fetch('/todos/create',{
+                method: 'POST',
+                body:JSON.stringify({
+                    'description' : document.getElementById('description').value,
+                    'list_id':document.getElementById('list_id').value
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(function(response){
+                return response.json();
+            })
+            .then(function(jsonResponse){
+                const liItem = document.createElement('LI');
+                liItem.innerHTML = jsonResponse['description'];
+                document.getElementById('todos').appendChild(liItem);
+                document.getElementById('error').className='hidden';
+                window.location.reload(true)
+            })
+            .catch(function(){
+                document.getElementById('error').className='';
+            })
+        }
+
+        document.getElementById('list-form').onsubmit=function(e){
+            e.preventDefault();
+
+            fetch('/lists/create',{
+                method: 'POST',
+                body: JSON.stringify({
+                    'name':document.getElementById('todolist-input').value
+                }),
+                headers: {
+                    'Content-Type':'application/json'
+                }
+            })
+            .then(function(response){
+                return response.json();
+            })
+            .then(function(jsonResponse){
+                const liItem = document.createElement('LI');
+                liItem.innerHTML = jsonResponse['name'];
+                document.getElementById('lists').appendChild(liItem);
+                document.getElementById('error').className='hidden';
+                window.location.reload(true);
+            })
+            .catch(function(e){
+                document.getElementById('error').className='';
+            })
+        }
+    </script>
+
+</body>
+</html>
