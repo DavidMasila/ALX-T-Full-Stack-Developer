@@ -16,16 +16,21 @@ def after_request(response):
 def get_plants():
     #implement pegination
     page=request.args.get('page',1,type=int) #GET PAGE otherwise default to 1
-    start = (page -1)
+    start = (page -1) * 10
     end = start + 10
     plants = Plant.query.all()
     formatted_plants = [plant.format() for plant in plants]
+    current_plants=formatted_plants[start:end]
 
-    return jsonify({
-        "success":True,
-        "plants": formatted_plants[start:end],
-        "Total plants": len(formatted_plants)
-    })
+    if len(current_plants) == 0:
+        abort(404)
+
+    else:
+        return jsonify({
+            "success":True,
+            "plants": current_plants,
+            "Total plants": len(formatted_plants)
+        })
 
 @app.route('/plants/<int:plant_id>')
 def get_specified_plant(plant_id):
@@ -40,3 +45,10 @@ def get_specified_plant(plant_id):
         })
 
 
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({
+        "success":False,
+        "error":404,
+        "message":"resource not found"
+    }),400
