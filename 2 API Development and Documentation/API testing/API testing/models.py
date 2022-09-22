@@ -1,41 +1,33 @@
-import os
-from sqlalchemy import Column, String, Integer, create_engine
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-import json
+from flask import Flask
 
-database_name = "bookshelf"
-database_path = "postgresql://{}:{}@{}/{}".format(
-    "postgres", "postgres", "localhost:5432", database_name
-)
-
+database_name = "testingdb"
+database_path = "postgresql://{}:{}@{}/{}".format("postgres", "postgres",
+                                                  "localhost:5432",
+                                                  database_name)
 db = SQLAlchemy()
-
-"""
-setup_db(app)
-    binds a flask application and a SQLAlchemy service
-"""
+# migrate = Migrate()
 
 
 def setup_db(app, database_path=database_path):
-    app.config["SQLALCHEMY_DATABASE_URI"] = database_path
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_path
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.app = app
+    # migrate.db = db
+    # migrate.app = app
     db.init_app(app)
+    # migrate.init_app(app)
     db.create_all()
-
-
-"""
-Book
-"""
 
 
 class Book(db.Model):
     __tablename__ = "books"
 
-    id = Column(Integer, primary_key=True)
-    title = Column(String)
-    author = Column(String)
-    rating = Column(Integer)
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String())
+    author = db.Column(db.String())
+    rating = db.Column(db.Integer)
 
     def __init__(self, title, author, rating):
         self.title = title
